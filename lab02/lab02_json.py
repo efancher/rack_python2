@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #!*-* coding:utf-8 *-*
 import requests
+import getpass
 """
 
 :mod:`lab02_json` -- JSON Navigation
@@ -41,7 +42,8 @@ import json
 print("a")
 auth_content_js = ""
 def update_cached_auth_response():
-    payload = '{"auth": {"passwordCredentials": {"username":"python2.class", "password":"Python2_class"}}}'
+    password = getpass.getpass()
+    payload = '{"auth": {"passwordCredentials": {"username":"python2.class", "password":"'+password+'"}}}'
     url = "https://identity.api.rackspacecloud.com/v2.0/tokens"
     headers = {"content-type": "application/json"}
     r = requests.post(url, data=payload, headers=headers)
@@ -85,13 +87,19 @@ print(get_compute_public_URL(auth_content_js, "DFW"))
 
 # d
 def update_cached_compute_api_info():
-    with open("compute_api_sample.json", "r") as fh:
-        compute_api_content = fh.read()
-        compute_api_content_js = json.loads(compute_api_content)
+    #with open("compute_api_sample.json", "r") as fh:
+    #curl -X GET https://dfw.servers.api.rd.com/v2/830389/flavors -H "X-Auth-Token:67f8fe7f324a421f85eb67b648ba2190"
+    headers = {"X-Auth-Token":"67f8fe7f324a421f85eb67b648ba2190"}
+    # url = "https://dfw.servers.api.rd.com/v2/{0}".format(get_tenant_id(auth_content_js))
+    url = "{0}/flavors".format(get_compute_public_URL(auth_content_js, "DFW"))
+    print url
+    r = requests.get(url, headers=headers)
+    compute_api_content = r.text # fh.read()
+    compute_api_content_js = json.loads(compute_api_content)
  
     return compute_api_content_js 
 compute_api_info = update_cached_compute_api_info() 
-
+print(compute_api_info)
 def get_image_id(compute_info):
    return compute_info["flavor_ID"] 
 
