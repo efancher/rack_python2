@@ -89,7 +89,7 @@ print(get_compute_public_URL(auth_content_js, "DFW"))
 def update_cached_compute_api_info():
     #with open("compute_api_sample.json", "r") as fh:
     #curl -X GET https://dfw.servers.api.rd.com/v2/830389/flavors -H "X-Auth-Token:67f8fe7f324a421f85eb67b648ba2190"
-    headers = {"X-Auth-Token":"67f8fe7f324a421f85eb67b648ba2190"}
+    headers = {"X-Auth-Token":get_token_id(auth_content_js)}
     # url = "https://dfw.servers.api.rd.com/v2/{0}".format(get_tenant_id(auth_content_js))
     url = "{0}/flavors".format(get_compute_public_URL(auth_content_js, "DFW"))
     print url
