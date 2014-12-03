@@ -36,37 +36,64 @@ LAB07 -- Learning Objective: Familiarization with threading module and
 
 """
 import threading
+from threading import Thread
 import random
+import time
+
 work_to_do = list() 
 connections = dict()
 cv = threading.Condition()
 def test_function():
+    time.sleep(random.randint(4,8))
     print "test 1"
 
 def test2_function():
+    time.sleep(random.randint(4,8))
     print "test 2"
-
+    
 def test3_function():
+    time.sleep(random.randint(10,15))
     print "test 3"
 
+class Boss(Thread):
+    def __init__(self, number_to_produce):
+        ''' Constructor. '''
+        
+        Thread.__init__(self)
+        self.number_to_produce = number_to_produce
 
-def boss():
-    with cv: 
-        work_to_do.append(random.choose([test_function, test2_function, test3_function])
-        cv.notify()
+    def run(self):
+        for i in range(1,self.number_to_produce+1):
+            time.sleep(random.randint(3,6))
+            with cv: 
+                print(self.getName())
+                print("produced {0} items".format(i))
+                work_to_do.append(random.choice([test_function, test2_function, test3_function]))
+                cv.notifyAll()
 
-def worker():
-    with cv:
-        #do something
-        pass   
+class Worker(Thread):
+    def run(self):
+        while(True):
+            with cv:
+                while len(work_to_do) == 0:
+                    cv.wait()
+                print(self.getName())
+                func = work_to_do.pop() 
+                func()
  
 
-def connection_mgr():
-   pass
+if __name__ == "__main__":
 
-def connection_mgr():
-   pass
-
-
+    worker_objects = list()    
+    
+    for i in range(4):
+        new_thread = Worker()
+        new_thread.setName("Worker thread {0}".format(i))
+        worker_objects.append(new_thread)
+        new_thread.start()
+    
+    
+    boss = Boss(10)
+    boss.start()
 
 
